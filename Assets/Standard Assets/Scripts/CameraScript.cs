@@ -20,7 +20,6 @@ public class CameraScript : MonoBehaviour {
 	void LateUpdate()
 	{
 		this.transform.position = GameObject.Find ("Sphere").transform.position;
-		print (GameObject.Find ("Sphere").rigidbody.angularVelocity.y);
 		this.transform.Rotate(0,GameObject.Find("Sphere").rigidbody.angularVelocity.y,0);
 	}
 }
