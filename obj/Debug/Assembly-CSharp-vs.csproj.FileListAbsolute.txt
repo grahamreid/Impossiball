@@ -1,0 +1,13 @@
+C:\Users\gjreid01\Documents\CapstoneProject\obj\Debug\Assembly-CSharp-vs.csprojResolveAssemblyReference.cache
+C:\Users\gjreid01\Documents\CapstoneProject\Temp\bin\Debug\Assembly-CSharp.dll
+C:\Users\gjreid01\Documents\CapstoneProject\Temp\bin\Debug\Assembly-CSharp.pdb
+C:\Users\gjreid01\Documents\CapstoneProject\Temp\bin\Debug\Assembly-UnityScript-firstpass.dll
+C:\Users\gjreid01\Documents\CapstoneProject\Temp\bin\Debug\UnityEditor.dll
+C:\Users\gjreid01\Documents\CapstoneProject\Temp\bin\Debug\UnityEngine.dll
+C:\Users\gjreid01\Documents\CapstoneProject\Temp\bin\Debug\Mono.Cecil.dll
+C:\Users\gjreid01\Documents\CapstoneProject\Temp\bin\Debug\nunit.framework.dll
+C:\Users\gjreid01\Documents\CapstoneProject\Temp\bin\Debug\Unity.DataContract.dll
+C:\Users\gjreid01\Documents\CapstoneProject\Temp\bin\Debug\ICSharpCode.NRefactory.dll
+C:\Users\gjreid01\Documents\CapstoneProject\Temp\bin\Debug\Assembly-CSharp-firstpass.pdb
+C:\Users\gjreid01\Documents\CapstoneProject\obj\Debug\Assembly-CSharp.dll
+C:\Users\gjreid01\Documents\CapstoneProject\obj\Debug\Assembly-CSharp.pdb
