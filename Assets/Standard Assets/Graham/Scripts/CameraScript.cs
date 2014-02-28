@@ -2,14 +2,8 @@
 using System.Collections;
 
 public class CameraScript : MonoBehaviour {
-	float floatPivotSpeed = .1f;
 	// Use this for initialization
 	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
 	
 	}
 
@@ -17,9 +11,9 @@ public class CameraScript : MonoBehaviour {
 		
 	}
 
-	void LateUpdate()
+	void Update()
 	{
-		this.transform.position = GameObject.Find ("Sphere").transform.position;
-		this.transform.Rotate(0,GameObject.Find("Sphere").rigidbody.angularVelocity.y,0);
+		this.transform.position = GameObject.Find ("Orientation").transform.position;
+		this.transform.rotation = GameObject.Find ("Orientation").transform.rotation;
 	}
 }

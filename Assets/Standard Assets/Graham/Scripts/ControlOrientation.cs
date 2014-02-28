@@ -2,15 +2,23 @@
 using System.Collections;
 
 public class ControlOrientation : MonoBehaviour {
-	float floatPivotSpeed = .1f;
+	float floatPivotSpeed = 2f;
 	// Use this for initialization
 	void Start () {
-	
+		
 	}
 	
-	// Update is called once per frame
-	void Update () {
+	void Awake () {
+		
+	}
+	
+	void Update()
+	{
+		float floatRotationY = Input.GetAxis ("Pivot")*floatPivotSpeed;
+		print (floatRotationY);
+		if(floatRotationY < -floatPivotSpeed/4 || floatRotationY > floatPivotSpeed/4)
+			this.transform.Rotate(0,floatRotationY,0);
 		this.transform.position = GameObject.Find ("Sphere").transform.position;
-		this.transform.Rotate(0,GameObject.Find("Sphere").rigidbody.angularVelocity.y,0);
 	}
+
 }
