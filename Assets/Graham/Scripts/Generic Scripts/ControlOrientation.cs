@@ -15,7 +15,6 @@ public class ControlOrientation : MonoBehaviour {
 	void Update()
 	{
 		float floatRotationY = Input.GetAxis ("Pivot")*floatPivotSpeed;
-		print (floatRotationY);
 		if(floatRotationY < -floatPivotSpeed/4 || floatRotationY > floatPivotSpeed/4)
 			this.transform.Rotate(0,floatRotationY,0);
 		this.transform.position = GameObject.Find ("Sphere").transform.position;
