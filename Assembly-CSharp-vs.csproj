@@ -49,7 +49,9 @@
      <Compile Include="Assets\Graham\Scripts\Generic Scripts\CameraScript.cs" />
      <Compile Include="Assets\Graham\Scripts\Generic Scripts\ControlBall.cs" />
      <Compile Include="Assets\Graham\Scripts\Generic Scripts\ControlOrientation.cs" />
+     <Compile Include="Assets\Graham\Scripts\Level Two Scripts\FSMLights.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\FSMMovePlatform.cs" />
+     <Compile Include="Assets\Graham\Scripts\Level Two Scripts\MoveElevator.cs" />
      <Compile Include="Assets\OVR\OVRImageEffects\OVRImageEffectBase.cs" />
      <Compile Include="Assets\OVR\OVRImageEffects\OVRLensCorrection.cs" />
      <Compile Include="Assets\OVR\Scripts\OVRCamera.cs" />
