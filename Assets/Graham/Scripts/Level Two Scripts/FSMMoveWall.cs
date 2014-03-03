@@ -25,6 +25,7 @@ public class FSMMoveWall : MonoBehaviour {
 				currentState = State.Waiting;
 			break;
 		case(State.Lowering):
+			this.transform.position -= new Vector3(0,this.transform.localScale.y,0)*Time.deltaTime;
 			if(this.transform.position.y <= fltReferenceHeight-this.transform.localScale.y)
 				currentState = State.Waiting;
 			break;

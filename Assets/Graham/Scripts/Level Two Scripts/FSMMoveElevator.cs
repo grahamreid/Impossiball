@@ -4,6 +4,8 @@ using System.Collections;
 public class FSMMoveElevator : MonoBehaviour {
 	public  int intSpeed;
 	public GameObject objDestination;
+	public GameObject objCheckpoint;
+	public GameObject wallToDrop;
 	private GameObject objWallToMove;
 	private float _fltReferenceHeight;
 	private string _strDestinationName;
@@ -20,7 +22,8 @@ public class FSMMoveElevator : MonoBehaviour {
 		Illuminating,
 		RaisingWalls,
 		LoweringWalls,
-		MovingSelf
+		MovingSelf,
+		ReachedTop
 	}
 	States currentState;
 	// Use this for initialization
@@ -55,14 +58,29 @@ public class FSMMoveElevator : MonoBehaviour {
 			this.transform.position += intSpeed * (objDestination.transform.position - this.transform.position).normalized * Time.deltaTime;
 			_player.transform.position += intSpeed * (objDestination.transform.position - this.transform.position).normalized * Time.deltaTime;
 			if((this.transform.position - objDestination.transform.position).magnitude < fltDistanceThreshold)
+				EnterState_ReachedTop();
+			break;
+		case(States.ReachedTop):
+			if(wallToDrop.gameObject.GetComponent<FSMMoveWall>().currentState == FSMMoveWall.State.Waiting)
 				currentState = States.Waiting;
 			break;
 		}
 	}
 	
-	public void EnterState_RaisingWalls(string strWallToMove){
+	public void EnterState_RaisingWalls(){
 		currentState = States.RaisingWalls;
 
+	}
+
+	public void EnterState_LoweringWalls(){
+		currentState = States.LoweringWalls;
+		
+	}
+
+	public void EnterState_ReachedTop(){
+		objCheckpoint.GetComponent<FSMCheckpointPlatform>().EnterState_LoweringWalls();
+		wallToDrop.GetComponent<FSMMoveWall>().EnterState_Lowering();
+		currentState = States.ReachedTop;
 	}
 
 	public void EnterState_Illuminating(float fltLightsTimer){
@@ -79,6 +97,7 @@ public class FSMMoveElevator : MonoBehaviour {
 				foreach (Transform child in this.transform.FindChild("ElevatorFloor").transform)
 					child.gameObject.GetComponent<FSMMoveWall>().EnterState_Raising();
 				break;
+				
 		}
 	}
 }
