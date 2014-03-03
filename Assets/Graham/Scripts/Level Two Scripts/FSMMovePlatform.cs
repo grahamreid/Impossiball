@@ -10,23 +10,24 @@ public class FSMMovePlatform : MonoBehaviour {
 	private string strDestinationName;
 	private const string strPlayerName = "Sphere";
 	private const float fltDistanceThreshold = .1f;
-	private Renderer[] ElevatorChildrenWallRenderers;
 
-	float fltOngoingTimer = 0;
-	float fltDelayBeforeHighlightingWalls = 1.4f;
+	private GameObject Elevator;
 
 	private GameObject 	LightGroup1,
 						LightGroup2,
 						LightGroup3,
 						LightGroup4;
+	private GameObject  PlatformWall1,
+						PlatformWall2,
+						PlatformWall3,
+						PlatformWall4;
 	enum State{
 		Waiting,
 		RaisingWalls,
 		LoweringWalls,
 		MovingSelf,
 		Lights,
-		WaitingOnLights,
-		Finished
+		PendingElevator
 	}
 	State currentState;
 	// Use this for initialization
@@ -37,7 +38,12 @@ public class FSMMovePlatform : MonoBehaviour {
 		LightGroup2 = this.transform.FindChild ("CornerLightGroup2").gameObject;
 		LightGroup3 = this.transform.FindChild ("CornerLightGroup3").gameObject;
 		LightGroup4 = this.transform.FindChild ("CornerLightGroup4").gameObject;
-		ElevatorChildrenWallRenderers = this.transform.FindChild ("Elevator").GetComponentsInChildren<Renderer>();
+		PlatformWall1 = this.transform.FindChild ("PlatformWall1").gameObject;
+		PlatformWall2 = this.transform.FindChild ("PlatformWall2").gameObject;
+		PlatformWall3 = this.transform.FindChild ("PlatformWall3").gameObject;
+		PlatformWall4 = this.transform.FindChild ("PlatformWall4").gameObject;
+		PlatformWall4 = this.transform.FindChild ("PlatformWall4").gameObject;
+		Elevator = this.transform.FindChild ("Elevator").gameObject;
 	}
 	
 	// Update is called once per frame
@@ -46,9 +52,8 @@ public class FSMMovePlatform : MonoBehaviour {
 		case(State.Waiting):
 				break;		
 		case(State.RaisingWalls):
-			objWallToMove.transform.position += new Vector3(0,1,0)*Time.deltaTime;
-				if(objWallToMove.transform.position.y >= fltReferenceHeight+1)
-					currentState = State.MovingSelf;
+			if(PlatformWall1.GetComponent<FSMMoveWall>().currentState == FSMMoveWall.State.Waiting)
+				currentState = State.MovingSelf;
 			break;
 		case(State.MovingSelf):
 			this.transform.position += intSpeed * (objDestination.transform.position - this.transform.position).normalized * Time.deltaTime;
@@ -60,17 +65,8 @@ public class FSMMovePlatform : MonoBehaviour {
 			LightGroup2.GetComponent<FSMLights>().EnterState_ShineLights();
 			LightGroup3.GetComponent<FSMLights>().EnterState_ShineLights();
 			LightGroup4.GetComponent<FSMLights>().EnterState_ShineLights();
-			fltOngoingTimer = Time.time;
-			currentState = State.WaitingOnLights;
-			break;
-		case(State.WaitingOnLights):
-			if((Time.time - fltOngoingTimer) >= fltDelayBeforeHighlightingWalls)
-			{
-				foreach(Renderer rend in ElevatorChildrenWallRenderers)
-					rend.material.color = Color.green;
-				this.transform.FindChild("Elevator").renderer.material.color = Color.grey;
-				currentState = State.Finished;
-			}
+			Elevator.GetComponent<FSMMoveElevator>().EnterState_Illuminating(Time.time);
+			currentState = State.PendingElevator;
 			break;
 		}
 	}
@@ -79,25 +75,16 @@ public class FSMMovePlatform : MonoBehaviour {
 		if(other.name == strPlayerName)
 			switch(currentState){
 				case(State.Waiting):
-					RaisingWallsEnterState("PlatformWall1");
+					PlatformWall1.GetComponent<FSMMoveWall>().EnterState_Raising();
+					currentState = State.RaisingWalls;
 					break;
 			}
 		if(other.name == strDestinationName)
 			switch(currentState){
 				case(State.MovingSelf):
-					this.currentState = State.Finished;
+					currentState = State.Waiting;
 					break;	
 			}
 	}
 
-	void RaisingWallsEnterState(string strWallToMove){
-		currentState = State.RaisingWalls;
-		objWallToMove = this.transform.FindChild (strWallToMove).gameObject;
-		fltReferenceHeight = objWallToMove.transform.position.y;
-	}
-
-	void ShineLights()
-	{
-
-	}
 }
