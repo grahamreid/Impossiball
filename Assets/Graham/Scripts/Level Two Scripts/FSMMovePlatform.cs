@@ -21,6 +21,7 @@ public class FSMMovePlatform : MonoBehaviour {
 						PlatformWall2,
 						PlatformWall3,
 						PlatformWall4;
+	private GameObject _player;
 	enum State{
 		Waiting,
 		RaisingWalls,
@@ -44,6 +45,7 @@ public class FSMMovePlatform : MonoBehaviour {
 		PlatformWall4 = this.transform.FindChild ("PlatformWall4").gameObject;
 		PlatformWall4 = this.transform.FindChild ("PlatformWall4").gameObject;
 		Elevator = this.transform.FindChild ("Elevator").gameObject;
+		_player = GameObject.Find ("Player").gameObject;
 	}
 	
 	// Update is called once per frame
@@ -57,6 +59,7 @@ public class FSMMovePlatform : MonoBehaviour {
 			break;
 		case(State.MovingSelf):
 			this.transform.position += intSpeed * (objDestination.transform.position - this.transform.position).normalized * Time.deltaTime;
+			_player.transform.position += intSpeed * (objDestination.transform.position - this.transform.position).normalized * Time.deltaTime;
 			if((this.transform.position - objDestination.transform.position).magnitude < fltDistanceThreshold)
 				currentState = State.Lights;
 			break;

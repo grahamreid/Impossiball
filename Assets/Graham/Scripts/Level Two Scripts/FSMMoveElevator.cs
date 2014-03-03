@@ -13,6 +13,8 @@ public class FSMMoveElevator : MonoBehaviour {
 	private float _fltDelayBeforeHighlightingWalls = 1.4f;
 	private const float fltDistanceThreshold = .1f;
 
+	private GameObject _player;
+
 	enum States{
 		Waiting,
 		Illuminating,
@@ -27,6 +29,7 @@ public class FSMMoveElevator : MonoBehaviour {
 		_strDestinationName = objDestination.name;
 		ElevatorChildrenWallRenderers = this.GetComponentsInChildren<Renderer>();
 		this.collider.enabled = false;
+		_player = GameObject.Find ("Player").gameObject;
 	}
 	
 	void Update () {
@@ -49,8 +52,8 @@ public class FSMMoveElevator : MonoBehaviour {
 					currentState = States.MovingSelf;
 			break;
 		case(States.MovingSelf):
-			print (intSpeed * (objDestination.transform.position - this.transform.position).normalized * Time.deltaTime);
 			this.transform.position += intSpeed * (objDestination.transform.position - this.transform.position).normalized * Time.deltaTime;
+			_player.transform.position += intSpeed * (objDestination.transform.position - this.transform.position).normalized * Time.deltaTime;
 			if((this.transform.position - objDestination.transform.position).magnitude < fltDistanceThreshold)
 				currentState = States.Waiting;
 			break;
