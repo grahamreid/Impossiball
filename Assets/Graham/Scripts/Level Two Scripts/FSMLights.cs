@@ -7,7 +7,8 @@ public class FSMLights : MonoBehaviour {
 	const float fltLightTimingThreshold = 0.2f;
 	enum State{
 		Waiting,
-		ShineLights
+		ShineLights,
+		DisableLights
 	}
 	GameObject 	Light1,
 				Light2,
@@ -52,6 +53,10 @@ public class FSMLights : MonoBehaviour {
 				else if(fltTimeDiff < fltLightTimingThreshold*7)
 					switchOnLight(Light7);
 				break;
+			case(State.DisableLights):
+				foreach(Transform child in this.transform)
+				switchOffLight(child.gameObject);
+				break;
 		}
 	}
 
@@ -61,9 +66,19 @@ public class FSMLights : MonoBehaviour {
 		currentState = State.ShineLights;
 	}
 
+	public void EnterState_DisableLights()
+	{
+		currentState = State.DisableLights;
+	}
+
 	void switchOnLight(GameObject objLight){
 		(objLight.GetComponent ("Halo") as Behaviour).enabled = true;
 		objLight.renderer.material.color = Color.green;
+	}
+
+	void switchOffLight(GameObject objLight){
+		(objLight.GetComponent ("Halo") as Behaviour).enabled = false;
+		objLight.renderer.material.color = Color.white;
 	}
 
 }

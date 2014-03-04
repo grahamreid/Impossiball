@@ -27,7 +27,8 @@ public class FSMMovePlatform : MonoBehaviour {
 		RaisingWalls,
 		LoweringWalls,
 		MovingSelf,
-		Lights,
+		LightsOn,
+		LightsOff,
 		PendingElevator
 	}
 	State currentState;
@@ -52,25 +53,34 @@ public class FSMMovePlatform : MonoBehaviour {
 	void Update () {
 	switch (currentState) {
 		case(State.Waiting):
-				break;		
+			if( this.transform.FindChild("Elevator").GetComponent<FSMMoveElevator>().currentState == FSMMoveElevator.States.MovingSelf)
+			   currentState = State.LightsOff;
+			break;		
 		case(State.RaisingWalls):
-			if(PlatformWall1.GetComponent<FSMMoveWall>().currentState == FSMMoveWall.State.Waiting)
+			if(PlatformWall1.GetComponent<FSMMoveWall>().currentState == FSMMoveWall.State.Raised)
 				currentState = State.MovingSelf;
 			break;
 		case(State.MovingSelf):
 			this.transform.position += intSpeed * (objDestination.transform.position - this.transform.position).normalized * Time.deltaTime;
 			_player.transform.position += intSpeed * (objDestination.transform.position - this.transform.position).normalized * Time.deltaTime;
 			if((this.transform.position - objDestination.transform.position).magnitude < fltDistanceThreshold)
-				currentState = State.Lights;
+				currentState = State.LightsOn;
 			break;
-		case(State.Lights):
+		case(State.LightsOn):
 			LightGroup1.GetComponent<FSMLights>().EnterState_ShineLights();
 			LightGroup2.GetComponent<FSMLights>().EnterState_ShineLights();
 			LightGroup3.GetComponent<FSMLights>().EnterState_ShineLights();
 			LightGroup4.GetComponent<FSMLights>().EnterState_ShineLights();
 			Elevator.GetComponent<FSMMoveElevator>().EnterState_Illuminating(Time.time);
-			currentState = State.PendingElevator;
+			currentState = State.Waiting;
 			break;
+	   case(State.LightsOff):
+		   LightGroup1.GetComponent<FSMLights>().EnterState_DisableLights();
+		   LightGroup2.GetComponent<FSMLights>().EnterState_DisableLights();
+		   LightGroup3.GetComponent<FSMLights>().EnterState_DisableLights();
+		   LightGroup4.GetComponent<FSMLights>().EnterState_DisableLights();
+		   currentState = State.Waiting;
+		   break;
 		}
 	}
 	

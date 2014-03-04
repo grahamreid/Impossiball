@@ -3,7 +3,7 @@ using System.Collections;
 
 public class FSMCheckpointPlatform : MonoBehaviour {
 	public GameObject wallToDrop;
-
+	public GameObject elevator;
 	
 	private GameObject _player;
 	
@@ -16,7 +16,6 @@ public class FSMCheckpointPlatform : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		States currentState = States.Waiting;	
-		this.collider.enabled = false;
 		_player = GameObject.Find ("Player").gameObject;
 	}
 	
@@ -25,7 +24,7 @@ public class FSMCheckpointPlatform : MonoBehaviour {
 					case(States.Waiting):
 						break;	
 					case(States.RaisingWalls):
-						if(wallToDrop.GetComponent<FSMMoveWall>().currentState == FSMMoveWall.State.Waiting)
+						if(wallToDrop.GetComponent<FSMMoveWall>().currentState == FSMMoveWall.State.Raised)
 							currentState = States.Waiting;
 						break;
 				}
@@ -41,5 +40,15 @@ public class FSMCheckpointPlatform : MonoBehaviour {
 		wallToDrop.GetComponent<FSMMoveWall>().EnterState_Lowering();
 		currentState = States.LoweringWalls;
 		
+	}
+
+	public void OnTriggerEnter(Collider other)
+	{
+		switch(other.name){
+			case("Sphere"):
+				this.collider.enabled = false;
+				elevator.GetComponent<FSMMoveElevator>().EnterState_LoweringWalls();
+				break;
+		}
 	}
 }
