@@ -6,7 +6,7 @@ public class ControlBall : MonoBehaviour {
 	public GameObject LevelTransitionCollider;
 
 	float floatSpeed = 10.0f;
-	float floatRotationSpeed = 10.0f;
+	float floatRotationSpeed = 7.5f;
 	float floatPivotSpeed = 1.5f;
 	float floatMaxAngularVelocity = 5;
 	Vector3 Vector3LastAngularVelocity;
@@ -41,8 +41,9 @@ public class ControlBall : MonoBehaviour {
 	}
 
 	void LateUpdate() {
+		print (this.rigidbody.angularVelocity.magnitude);
 		if(this.rigidbody.angularVelocity.magnitude > floatMaxAngularVelocity)
-			this.rigidbody.AddTorque(this.rigidbody.angularVelocity.x*(-1),0,this.rigidbody.angularVelocity.z*(-2));
+			this.rigidbody.AddTorque(this.rigidbody.angularVelocity.x*(-.75f),0,this.rigidbody.angularVelocity.z*(-.75f));
 		}
 
 

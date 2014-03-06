@@ -13,7 +13,7 @@ public class FSMMoveElevator : MonoBehaviour {
 	private Renderer[] ElevatorChildrenWallRenderers;
 	private float _fltLightsTimer;
 	private float _fltDelayBeforeHighlightingWalls = 1.4f;
-	private const float fltDistanceThreshold = .05f;
+	private const float fltDistanceThreshold = .1f;
 	private GameObject currentDestination;
 	private bool _blnPlayerOnPlatform;
 
@@ -26,7 +26,8 @@ public class FSMMoveElevator : MonoBehaviour {
 		RaisingWalls,
 		LoweringWalls,
 		MovingSelf,
-		ReachedTop
+		ReachedTop,
+		WaitingAtTop
 	}
 	public States currentState;
 	// Use this for initialization
@@ -75,7 +76,7 @@ public class FSMMoveElevator : MonoBehaviour {
 			break;
 		case(States.ReachedTop):
 			if(wallToDrop.gameObject.GetComponent<FSMMoveWall>().currentState == FSMMoveWall.State.Lowered)
-				currentState = States.Waiting;
+				currentState = States.WaitingAtTop;
 			break;
 		}
 	}
@@ -89,6 +90,8 @@ public class FSMMoveElevator : MonoBehaviour {
 	}
 
 	public void EnterState_LoweringWalls(){
+		if (currentState != States.WaitingAtTop)
+			return;
 		this.collider.enabled = true;
 		foreach (Transform child in this.transform.FindChild("ElevatorFloor").transform) {
 			child.gameObject.GetComponent<FSMMoveWall> ().EnterState_Lowering ();

@@ -27,6 +27,10 @@ public class FSMCheckpointPlatform : MonoBehaviour {
 						if(wallToDrop.GetComponent<FSMMoveWall>().currentState == FSMMoveWall.State.Raised)
 							currentState = States.Waiting;
 						break;
+					case(States.LoweringWalls):
+						if(wallToDrop.GetComponent<FSMMoveWall>().currentState == FSMMoveWall.State.Lowered)
+							currentState = States.Waiting;
+						break;
 				}
 	}
 
@@ -46,8 +50,9 @@ public class FSMCheckpointPlatform : MonoBehaviour {
 	{
 		switch(other.name){
 			case("Sphere"):
-				this.collider.enabled = false;
 				elevator.GetComponent<FSMMoveElevator>().EnterState_LoweringWalls();
+				wallToDrop.GetComponent<FSMMoveWall>().EnterState_Raising();
+				currentState = States.LoweringWalls;
 				break;
 		}
 	}

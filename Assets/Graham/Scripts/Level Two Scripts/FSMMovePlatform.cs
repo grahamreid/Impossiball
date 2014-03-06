@@ -5,7 +5,8 @@ public class FSMMovePlatform : MonoBehaviour {
 	
 	public  int intSpeed;
 	public GameObject objDestination;
-	private GameObject objWallToMove;
+	public GameObject objWallToRaise;
+	public GameObject objWallToDrop;
 	private float fltReferenceHeight;
 	private string strDestinationName;
 	private const string strPlayerName = "Sphere";
@@ -40,11 +41,6 @@ public class FSMMovePlatform : MonoBehaviour {
 		LightGroup2 = this.transform.FindChild ("CornerLightGroup2").gameObject;
 		LightGroup3 = this.transform.FindChild ("CornerLightGroup3").gameObject;
 		LightGroup4 = this.transform.FindChild ("CornerLightGroup4").gameObject;
-		PlatformWall1 = this.transform.FindChild ("PlatformWall1").gameObject;
-		PlatformWall2 = this.transform.FindChild ("PlatformWall2").gameObject;
-		PlatformWall3 = this.transform.FindChild ("PlatformWall3").gameObject;
-		PlatformWall4 = this.transform.FindChild ("PlatformWall4").gameObject;
-		PlatformWall4 = this.transform.FindChild ("PlatformWall4").gameObject;
 		Elevator = this.transform.FindChild ("Elevator").gameObject;
 		_player = GameObject.Find ("Player").gameObject;
 	}
@@ -57,14 +53,17 @@ public class FSMMovePlatform : MonoBehaviour {
 			   currentState = State.LightsOff;
 			break;		
 		case(State.RaisingWalls):
-			if(PlatformWall1.GetComponent<FSMMoveWall>().currentState == FSMMoveWall.State.Raised)
+			if(objWallToRaise.GetComponent<FSMMoveWall>().currentState == FSMMoveWall.State.Raised)
 				currentState = State.MovingSelf;
 			break;
 		case(State.MovingSelf):
 			this.transform.position += intSpeed * (objDestination.transform.position - this.transform.position).normalized * Time.deltaTime;
 			_player.transform.position += intSpeed * (objDestination.transform.position - this.transform.position).normalized * Time.deltaTime;
 			if((this.transform.position - objDestination.transform.position).magnitude < fltDistanceThreshold)
+			{
+				objWallToDrop.GetComponent<FSMMoveWall>().EnterState_Lowering();
 				currentState = State.LightsOn;
+			}
 			break;
 		case(State.LightsOn):
 			LightGroup1.GetComponent<FSMLights>().EnterState_ShineLights();
@@ -88,7 +87,7 @@ public class FSMMovePlatform : MonoBehaviour {
 		if(other.name == strPlayerName)
 			switch(currentState){
 				case(State.Waiting):
-					PlatformWall1.GetComponent<FSMMoveWall>().EnterState_Raising();
+					objWallToRaise.GetComponent<FSMMoveWall>().EnterState_Raising();
 					currentState = State.RaisingWalls;
 					break;
 			}
