@@ -50,10 +50,19 @@ public class FSMCheckpointPlatform : MonoBehaviour {
 	{
 		switch(other.name){
 			case("Sphere"):
-				elevator.GetComponent<FSMMoveElevator>().EnterState_LoweringWalls();
-				wallToDrop.GetComponent<FSMMoveWall>().EnterState_Raising();
+				wallToDrop.GetComponent<FSMMoveWall>().EnterState_Lowering();
 				currentState = States.LoweringWalls;
 				break;
+		}
+	}
+
+	public void OnTriggerExit(Collider other)
+	{
+		switch(other.name){
+		case("Sphere"):
+			wallToDrop.GetComponent<FSMMoveWall>().EnterState_Raising();
+			currentState = States.RaisingWalls;
+			break;
 		}
 	}
 }

@@ -28,7 +28,6 @@ public class ControlOrientation : MonoBehaviour {
 	void Update()
 	{
 		if (Mathf.Abs (Input.GetAxis ("Pivot")) > sensitivity) {
-						print ("here");
 						rotationX = transform.localEulerAngles.y + Input.GetAxis ("Pivot") * rotateSpeed;
 				}
 		if (Mathf.Abs(Input.GetAxis("Look")) > sensitivity)

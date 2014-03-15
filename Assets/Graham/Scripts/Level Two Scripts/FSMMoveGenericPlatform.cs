@@ -6,6 +6,7 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 	public GameObject[] checkpoints;
 	public GameObject[] wallsToMoveStart;
 	public GameObject[] wallsToMoveEnd;
+	public GameObject returnCheckpoint;
 	
 	public  float fltSpeed;
 	public bool blnTimedPlatform;
@@ -25,13 +26,19 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 	private GameObject _player;
 
 
-	private enum WallSet{
+	public enum WallSet{
 		startingWallSet,
 		endingWallSet
 	}
-	private WallSet _currentMovingWalls;
+	public WallSet _currentMovingWalls;
+	public enum MovingState{
+		BeginForward,
+		BeginReverse,
+		Continue
+	}
 	public enum States{
 		Waiting,
+		Delaying,
 		RaisingWalls,
 		LoweringWalls,
 		MovingSelf,
@@ -46,7 +53,6 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 		{
 			fltInitialWaitTime = 1;
 			_intDestinationIndex = 0;
-			_blnMovingForward = true;
 		}
 	}
 	
@@ -54,19 +60,19 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 		switch (currentState) {
 		case(States.Waiting):
 			if(blnTimedPlatform)
-				if(Time.time >= (fltInitialWaitTime + (intSecondsPerTick*intTicksWaiting)))
-				   if(_blnMovingForward)
-				   		EnterState_MovingSelf(_intDestinationIndex+1,_blnPlayerOnPlatform,true);
-				   else
-						EnterState_MovingSelf(_intDestinationIndex-1,_blnPlayerOnPlatform,false);
+				currentState = States.Delaying;
+			break;
+		case(States.Delaying):
+			if((Time.time >= (fltInitialWaitTime + (intSecondsPerTick*intTicksWaiting))))
+				DetermineNextMovement();
 			break;
 		case(States.RaisingWalls):
 			foreach(GameObject wall in currentWallSetToMove)
 				if(wall.GetComponent<FSMMoveWall>().currentState == FSMMoveWall.State.Raised)
 					if(_currentMovingWalls == WallSet.startingWallSet)
-						EnterState_MovingSelf(1,true,true);
+						EnterState_MovingSelf(MovingState.BeginForward);
 					else
-						EnterState_MovingSelf(checkpoints.Length-2,false,false);
+						EnterState_MovingSelf(MovingState.BeginReverse);
 			break;
 		case(States.LoweringWalls):
 			foreach(GameObject wall in currentWallSetToMove)
@@ -74,41 +80,40 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 					currentState = States.Waiting;
 			break;
 		case(States.MovingSelf):
+
 			this.transform.position += fltSpeed * (currentDestination.transform.position - this.transform.position).normalized * Time.deltaTime;
 			if(_blnPlayerOnPlatform)
 				_player.transform.position += fltSpeed * (currentDestination.transform.position - this.transform.position).normalized * Time.deltaTime;
 
-
 			if((this.transform.position - currentDestination.transform.position).magnitude < fltDistanceThreshold)
 			{
-				if(blnTimedPlatform)
-				{
-					if(currentDestination == checkpoints[checkpoints.Length-1])
-						EnterState_Waiting(false);
-					else if(currentDestination == checkpoints[0])
-						EnterState_Waiting(true);
-					else
-						EnterState_Waiting (_blnMovingForward);
-					currentState = States.Waiting;
-					break;
-				}
-
-				if(currentDestination == checkpoints[checkpoints.Length-1])
-					EnterState_LoweringWalls(WallSet.endingWallSet);
-				else if(currentDestination == checkpoints[0])
-					EnterState_LoweringWalls(WallSet.startingWallSet);
-				else
-					if(_blnMovingForward)
-						EnterState_MovingSelf(_intDestinationIndex+1,_blnPlayerOnPlatform,true);
-					else
-						EnterState_MovingSelf(_intDestinationIndex-1,_blnPlayerOnPlatform,false);
+				fltInitialWaitTime = Time.time;
+				currentState = States.Delaying;
 			}
 			break;
 		}
 	}
+
+	private void DetermineNextMovement()
+	{
+		if(blnTimedPlatform)
+			if(_intDestinationIndex == checkpoints.Length-1)
+				EnterState_MovingSelf(MovingState.BeginReverse);
+			else if(_intDestinationIndex == 0)
+				EnterState_MovingSelf(MovingState.BeginForward);
+			else
+				EnterState_MovingSelf (MovingState.Continue);
+		else
+			if(_intDestinationIndex == checkpoints.Length-1)
+				EnterState_LoweringWalls(WallSet.endingWallSet);
+			else if(_intDestinationIndex == 0)
+				EnterState_LoweringWalls(WallSet.startingWallSet);
+			else
+				EnterState_MovingSelf(MovingState.Continue);
+
+	}
 	
-	private void EnterState_RaisingWalls(WallSet wallSetToMove){
-		this.collider.enabled = false;
+	public void EnterState_RaisingWalls(WallSet wallSetToMove){
 		if (wallSetToMove == WallSet.startingWallSet)
 			currentWallSetToMove = wallsToMoveStart;
 		else
@@ -120,8 +125,7 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 		
 	}
 	
-	private void EnterState_LoweringWalls(WallSet wallSetToMove){
-		this.collider.enabled = false;
+	public void EnterState_LoweringWalls(WallSet wallSetToMove){
 		if (wallSetToMove == WallSet.startingWallSet)
 			currentWallSetToMove = wallsToMoveStart;
 		else
@@ -133,51 +137,51 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 		
 	}
 	
-	public void EnterState_MovingSelf(int intDestinationIndex,bool blnPlayerOnPlatform, bool blnMovingForward){
-		GameObject prevDestination;
-		if (blnMovingForward)
-			prevDestination = checkpoints[intDestinationIndex - 1];
-		else
-			prevDestination = checkpoints[intDestinationIndex + 1];
+	public void EnterState_MovingSelf(MovingState direction){
+		GameObject prevDestination = new GameObject ();
 
-		currentDestination = checkpoints[intDestinationIndex];
-		if (blnTimedPlatform) {
-						fltSpeed = (currentDestination.transform.position - prevDestination.transform.position).magnitude / (intTicksMoving * intSecondsPerTick);
-				}
-			
-		_blnPlayerOnPlatform = blnPlayerOnPlatform;
-		_intDestinationIndex = intDestinationIndex;
-		_blnMovingForward = blnMovingForward;
-		currentState = States.MovingSelf;
-	}
-
-	public void EnterState_Waiting(bool blnMovingForward = true)
-	{
-		if (blnTimedPlatform) 
+		switch(direction)
 		{
-			fltInitialWaitTime = Time.time;
-								_blnMovingForward = blnMovingForward;
+			case(MovingState.BeginForward):
+				_blnMovingForward = true;
+				_intDestinationIndex = 1;
+				prevDestination = checkpoints[0];
+				break;
+			case(MovingState.BeginReverse):
+				_blnMovingForward = false;	
+				_intDestinationIndex = checkpoints.Length-2;
+				prevDestination = checkpoints[checkpoints.Length-1];
+				break;
+			case(MovingState.Continue):
+				prevDestination = checkpoints[_intDestinationIndex];
+				if (_blnMovingForward)
+					_intDestinationIndex += 1;
+				else
+					_intDestinationIndex -= 1;
+				break;
 		}
+		currentDestination = checkpoints[_intDestinationIndex];
+		if (blnTimedPlatform)
+			fltSpeed = (currentDestination.transform.position - prevDestination.transform.position).magnitude / (intTicksMoving * intSecondsPerTick);
 
-		currentState = States.Waiting;
+		currentState = States.MovingSelf;
 	}
 	
 	public void OnTriggerEnter(Collider other)
 	{
-		if (blnTimedPlatform)
+		if (other.name == "Sphere") {
 			_blnPlayerOnPlatform = true;
-
-		switch (currentState) {
-		case(States.Waiting):
-			EnterState_RaisingWalls(WallSet.startingWallSet);
-			break;
-			
+			print ("here");
+			EnterState_RaisingWalls (WallSet.startingWallSet);
 		}
+			
 	}
 
 	public void OnTriggerExit(Collider other)
 	{
-		if (blnTimedPlatform)
-			_blnPlayerOnPlatform = false;
+		if (other.name == "Sphere") {
+						_blnPlayerOnPlatform = false;
+						print ("there");
+				}
 	}
 }
