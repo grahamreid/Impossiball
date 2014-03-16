@@ -10,12 +10,12 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 	
 	public  float fltSpeed;
 	public bool blnTimedPlatform;
-	public int intTicksMoving;
-	public int intTicksWaiting;
-	public int intSecondsPerTick;
+	public float fltTicksMoving;
+	public float fltTicksWaiting;
+	public float fltSecondsPerTick;
+	public float fltDistanceThreshold = .075f;
 
 	private const string strPlayerName = "Sphere";
-	private const float fltDistanceThreshold = .075f;
 	private GameObject currentDestination;
 	private bool _blnPlayerOnPlatform;
 	private int _intDestinationIndex;
@@ -63,7 +63,7 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 				currentState = States.Delaying;
 			break;
 		case(States.Delaying):
-			if((Time.time >= (fltInitialWaitTime + (intSecondsPerTick*intTicksWaiting))))
+			if((Time.time >= (fltInitialWaitTime + (fltSecondsPerTick*fltTicksWaiting))))
 				DetermineNextMovement();
 			break;
 		case(States.RaisingWalls):
@@ -87,7 +87,7 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 
 			if((this.transform.position - currentDestination.transform.position).magnitude < fltDistanceThreshold)
 			{
-				fltInitialWaitTime = Time.time;
+				fltInitialWaitTime =fltInitialWaitTime+(fltSecondsPerTick*fltTicksWaiting)+(fltSecondsPerTick*fltTicksMoving);
 				currentState = States.Delaying;
 			}
 			break;
@@ -138,8 +138,7 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 	}
 	
 	public void EnterState_MovingSelf(MovingState direction){
-		GameObject prevDestination = new GameObject ();
-
+		GameObject prevDestination = null;
 		switch(direction)
 		{
 			case(MovingState.BeginForward):
@@ -162,7 +161,7 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 		}
 		currentDestination = checkpoints[_intDestinationIndex];
 		if (blnTimedPlatform)
-			fltSpeed = (currentDestination.transform.position - prevDestination.transform.position).magnitude / (intTicksMoving * intSecondsPerTick);
+			fltSpeed = (currentDestination.transform.position - prevDestination.transform.position).magnitude / (fltTicksMoving * fltSecondsPerTick);
 
 		currentState = States.MovingSelf;
 	}
@@ -171,8 +170,8 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 	{
 		if (other.name == "Sphere") {
 			_blnPlayerOnPlatform = true;
-			print ("here");
-			EnterState_RaisingWalls (WallSet.startingWallSet);
+			if(!blnTimedPlatform)
+				EnterState_RaisingWalls (WallSet.startingWallSet);
 		}
 			
 	}
@@ -181,7 +180,6 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 	{
 		if (other.name == "Sphere") {
 						_blnPlayerOnPlatform = false;
-						print ("there");
 				}
 	}
 }
