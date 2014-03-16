@@ -55,6 +55,7 @@
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\FSMMoveGenericPlatform.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\FSMMovePlatform.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\FSMMoveWall.cs" />
+     <Compile Include="Assets\Graham\Scripts\Level Two Scripts\FSMRotatingCylinder.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\SingletonReturnCheckpoint.cs" />
      <Compile Include="Assets\OVR\OVRImageEffects\OVRImageEffectBase.cs" />
      <Compile Include="Assets\OVR\OVRImageEffects\OVRLensCorrection.cs" />

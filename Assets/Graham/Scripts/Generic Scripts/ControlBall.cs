@@ -41,6 +41,7 @@ public class ControlBall : MonoBehaviour {
 	}
 
 	void LateUpdate() {
+		print (this.rigidbody.angularVelocity);
 		if(this.rigidbody.angularVelocity.magnitude > floatMaxAngularVelocity)
 			this.rigidbody.AddTorque(this.rigidbody.angularVelocity.x*(-.75f),0,this.rigidbody.angularVelocity.z*(-.75f));
 		}

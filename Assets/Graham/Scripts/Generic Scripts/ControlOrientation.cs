@@ -15,7 +15,7 @@ public class ControlOrientation : MonoBehaviour {
 	float rotationX = 0F;
 	// Use this for initialization
 
-	private float rotateSpeed = 2f;
+	private float rotateSpeed = 1.5f;
 	void Start () {
 		minimumY = transform.localEulerAngles.x - 40;
 		maximumY = transform.localEulerAngles.x + 40;
