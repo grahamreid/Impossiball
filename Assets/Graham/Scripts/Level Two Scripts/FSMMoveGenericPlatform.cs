@@ -24,6 +24,7 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 	private float fltInitialWaitTime;
 
 	private GameObject _player;
+	private GameObject _sphere;
 
 
 	public enum WallSet{
@@ -42,6 +43,7 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 		RaisingWalls,
 		LoweringWalls,
 		MovingSelf,
+		RecoveringPlayer
 	}
 	public States currentState;
 	// Use this for initialization
@@ -49,6 +51,7 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 		States currentState = States.Waiting;	
 		this.collider.enabled = true;
 		_player = GameObject.Find ("Player").gameObject;
+		_sphere = _player.transform.FindChild ("Imposi-ball").gameObject.transform.FindChild ("Sphere").gameObject;
 		if (blnTimedPlatform) 
 		{
 			fltInitialWaitTime = 1;
@@ -73,11 +76,15 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 						EnterState_MovingSelf(MovingState.BeginForward);
 					else
 						EnterState_MovingSelf(MovingState.BeginReverse);
+			if(currentWallSetToMove.Length == 0)
+				EnterState_MovingSelf (MovingState.BeginForward);
 			break;
 		case(States.LoweringWalls):
 			foreach(GameObject wall in currentWallSetToMove)
 				if(wall.GetComponent<FSMMoveWall>().currentState == FSMMoveWall.State.Lowered)
 					currentState = States.Waiting;
+			if(currentWallSetToMove.Length == 0)
+				currentState = States.Waiting;
 			break;
 		case(States.MovingSelf):
 
@@ -90,6 +97,16 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 				fltInitialWaitTime =fltInitialWaitTime+(fltSecondsPerTick*fltTicksWaiting)+(fltSecondsPerTick*fltTicksMoving);
 				currentState = States.Delaying;
 			}
+			break;
+		case(States.RecoveringPlayer):
+			print (_sphere.transform.position.y);
+			print ((transform.parent.collider.transform.position.y-transform.position.y));
+			this.transform.position += 	((
+											(transform.parent.collider.transform.position.y-_sphere.transform.position.y)/(transform.parent.collider.transform.position.y-transform.position.y)
+										)*
+										(
+											new Vector3(_sphere.transform.position.x,0,_sphere.transform.position.z)-new Vector3(transform.position.x,0,transform.position.z)
+										));
 			break;
 		}
 	}
@@ -164,6 +181,12 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 			fltSpeed = (currentDestination.transform.position - prevDestination.transform.position).magnitude / (fltTicksMoving * fltSecondsPerTick);
 
 		currentState = States.MovingSelf;
+	}
+
+	public void EnterState_RecoverPlayer()
+	{
+		if(currentState == States.Waiting)
+			currentState = States.RecoveringPlayer;
 	}
 	
 	public void OnTriggerEnter(Collider other)
