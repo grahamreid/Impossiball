@@ -137,7 +137,10 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 			currentWallSetToMove = wallsToMoveEnd;
 		_currentMovingWalls = wallSetToMove;
 		foreach (GameObject wall in currentWallSetToMove)
-			wall.GetComponent<FSMMoveWall> ().EnterState_Raising ();
+			if (wall.GetComponent<FSMMoveWall> ().currentState == FSMMoveWall.State.Raised)
+				return;
+			else
+				wall.GetComponent<FSMMoveWall> ().EnterState_Raising ();
 		currentState = States.RaisingWalls;
 		
 	}
