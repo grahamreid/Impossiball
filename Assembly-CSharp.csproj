@@ -49,12 +49,14 @@
      <Compile Include="Assets\Graham\Scripts\Generic Scripts\CameraScript.cs" />
      <Compile Include="Assets\Graham\Scripts\Generic Scripts\ControlBall.cs" />
      <Compile Include="Assets\Graham\Scripts\Generic Scripts\ControlOrientation.cs" />
+     <Compile Include="Assets\Graham\Scripts\Level Two Scripts\CollectionCheckpointLevelCheckpoints.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\FSMCheckpointPlatform.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\FSMLights.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\FSMMoveElevator.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\FSMMoveGenericPlatform.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\FSMMovePlatform.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\FSMMoveWall.cs" />
+     <Compile Include="Assets\Graham\Scripts\Level Two Scripts\FSMObstacleThree.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\FSMRotatingCylinder.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\SingletonRecoverPlayer.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\SingletonReturnCheckpoint.cs" />
