@@ -13,7 +13,7 @@ public class FSMMoveElevator : MonoBehaviour {
 	private Renderer[] ElevatorChildrenWallRenderers;
 	private float _fltLightsTimer;
 	private float _fltDelayBeforeHighlightingWalls = 1.4f;
-	private const float fltDistanceThreshold = .1f;
+	private const float fltDistanceThreshold = .075f;
 	private GameObject currentDestination;
 	private bool _blnPlayerOnPlatform;
 

@@ -10,6 +10,7 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 	
 	public  float fltSpeed;
 	public bool blnTimedPlatform;
+	public bool blnWaitForPlayer = false;
 	public float fltTicksMoving;
 	public float fltTicksWaiting;
 	public float fltSecondsPerTick;
@@ -17,7 +18,7 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 
 	private const string strPlayerName = "Sphere";
 	private GameObject currentDestination;
-	private bool _blnPlayerOnPlatform;
+	public bool _blnPlayerOnPlatform;
 	private int _intDestinationIndex;
 	private GameObject[] currentWallSetToMove;
 	private bool _blnMovingForward;
@@ -52,17 +53,15 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 		this.collider.enabled = true;
 		_player = GameObject.Find ("Player").gameObject;
 		_sphere = _player.transform.FindChild ("Imposi-ball").gameObject.transform.FindChild ("Sphere").gameObject;
-		if (blnTimedPlatform) 
-		{
-			fltInitialWaitTime = 1;
+		if (!blnWaitForPlayer) 
 			_intDestinationIndex = 0;
-		}
 	}
 	
 	void Update () {
+		bool blnDoneMovingWalls = false;
 		switch (currentState) {
 		case(States.Waiting):
-			if(blnTimedPlatform)
+			if(!blnWaitForPlayer)
 				currentState = States.Delaying;
 			break;
 		case(States.Delaying):
@@ -72,19 +71,21 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 		case(States.RaisingWalls):
 			foreach(GameObject wall in currentWallSetToMove)
 				if(wall.GetComponent<FSMMoveWall>().currentState == FSMMoveWall.State.Raised)
-					if(_currentMovingWalls == WallSet.startingWallSet)
-						EnterState_MovingSelf(MovingState.BeginForward);
-					else
-						EnterState_MovingSelf(MovingState.BeginReverse);
-			if(currentWallSetToMove.Length == 0)
-				EnterState_MovingSelf (MovingState.BeginForward);
+					blnDoneMovingWalls = true;
+
+			if(blnDoneMovingWalls || currentWallSetToMove.Length == 0)
+				currentState = States.Delaying;
 			break;
 		case(States.LoweringWalls):
 			foreach(GameObject wall in currentWallSetToMove)
 				if(wall.GetComponent<FSMMoveWall>().currentState == FSMMoveWall.State.Lowered)
+					blnDoneMovingWalls = true;
+
+				if(blnDoneMovingWalls || currentWallSetToMove.Length == 0)
+				if(!blnWaitForPlayer)
+					currentState = States.Delaying;
+				else
 					currentState = States.Waiting;
-			if(currentWallSetToMove.Length == 0)
-				currentState = States.Waiting;
 			break;
 		case(States.MovingSelf):
 
@@ -99,8 +100,6 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 			}
 			break;
 		case(States.RecoveringPlayer):
-			print (_sphere.transform.position.y);
-			print ((transform.parent.collider.transform.position.y-transform.position.y));
 			this.transform.position += 	((
 											(transform.parent.collider.transform.position.y-_sphere.transform.position.y)/(transform.parent.collider.transform.position.y-transform.position.y)
 										)*
@@ -113,21 +112,22 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 
 	private void DetermineNextMovement()
 	{
-		if(blnTimedPlatform)
-			if(_intDestinationIndex == checkpoints.Length-1)
-				EnterState_MovingSelf(MovingState.BeginReverse);
-			else if(_intDestinationIndex == 0)
-				EnterState_MovingSelf(MovingState.BeginForward);
-			else
-				EnterState_MovingSelf (MovingState.Continue);
+		if (_intDestinationIndex == checkpoints.Length) {
+			EnterState_MovingSelf(MovingState.BeginReverse);
+		}
+		else if (_intDestinationIndex == checkpoints.Length - 1) {
+			EnterState_LoweringWalls(WallSet.endingWallSet);
+			_intDestinationIndex++;
+		}
+		else if (_intDestinationIndex == 0) {
+			EnterState_LoweringWalls (WallSet.startingWallSet);
+			_intDestinationIndex--;
+		}
+		else if (_intDestinationIndex == -1) {
+			EnterState_MovingSelf(MovingState.BeginForward);
+		} 
 		else
-			if(_intDestinationIndex == checkpoints.Length-1)
-				EnterState_LoweringWalls(WallSet.endingWallSet);
-			else if(_intDestinationIndex == 0)
-				EnterState_LoweringWalls(WallSet.startingWallSet);
-			else
-				EnterState_MovingSelf(MovingState.Continue);
-
+			EnterState_MovingSelf (MovingState.Continue);
 	}
 	
 	public void EnterState_RaisingWalls(WallSet wallSetToMove){
@@ -162,11 +162,13 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 		switch(direction)
 		{
 			case(MovingState.BeginForward):
+				fltInitialWaitTime = Time.time;
 				_blnMovingForward = true;
 				_intDestinationIndex = 1;
 				prevDestination = checkpoints[0];
 				break;
 			case(MovingState.BeginReverse):
+				fltInitialWaitTime = Time.time;
 				_blnMovingForward = false;	
 				_intDestinationIndex = checkpoints.Length-2;
 				prevDestination = checkpoints[checkpoints.Length-1];
@@ -196,8 +198,8 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 	{
 		if (other.name == "Sphere") {
 			_blnPlayerOnPlatform = true;
-			if(!blnTimedPlatform)
-				EnterState_RaisingWalls (WallSet.startingWallSet);
+			if(blnWaitForPlayer)
+				EnterState_RaisingWalls(WallSet.startingWallSet);
 		}
 			
 	}
