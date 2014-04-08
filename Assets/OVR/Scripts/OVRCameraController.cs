@@ -178,7 +178,8 @@ public class OVRCameraController : OVRComponent
 	// Update 
 	new void Update()
 	{
-		base.Update();		
+		base.Update();
+        this.transform.position = GameObject.Find("Sphere").transform.position;
 		UpdateCameras();
 	}
 		

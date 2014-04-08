@@ -11,31 +11,36 @@ public class ControlBall : MonoBehaviour {
 	float floatMaxAngularVelocity = 5;
 	Vector3 Vector3LastAngularVelocity;
 	GameObject objOrientation;
+    GameObject objCamera;
 	
 	// Use this for initialization
 	void Start () {
 		objOrientation = GameObject.Find ("Orientation");
+        objCamera = GameObject.Find("CameraLeft");
 		if (Application.loadedLevel == 1)
 				this.rigidbody.AddForce (0, -25, 0);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		float floatRotationX = Input.GetAxis ("Forward")*floatRotationSpeed;
-		float floatRotationZ = Input.GetAxis ("Strafe")*floatRotationSpeed;
+        float floatRotationX;
+        float floatRotationZ;
+        if (objCamera.transform.localEulerAngles.x > 180)
+            floatRotationX = objCamera.transform.localEulerAngles.x-360;
+        else
+            floatRotationX = objCamera.transform.localEulerAngles.x;
+        if (objCamera.transform.localEulerAngles.z > 180)
+            floatRotationZ = objCamera.transform.localEulerAngles.z - 360;
+        else
+            floatRotationZ = objCamera.transform.localEulerAngles.z;
 		float floatRotationY = Input.GetAxis ("Pivot")*floatPivotSpeed;
-		Vector3 v3ForwardRotation = objOrientation.transform.TransformDirection (Vector3.forward)*-floatRotationX;
+		Vector3 v3ForwardRotation = Vector3.Project(objCamera.transform.localEulerAngles,objOrientation.transform.TransformDirection (Vector3.forward));
 		Vector3 v3ForwardCounterRotation = -1.0f * v3ForwardRotation;
-		Vector3 v3SideRotation = objOrientation.transform.TransformDirection(Vector3.right)*-floatRotationZ;
+        Vector3 v3SideRotation = Vector3.Project(objCamera.transform.localEulerAngles, objOrientation.transform.TransformDirection(Vector3.right));
 		Vector3 v3SideCounterRotation = -1.0f * v3SideRotation;
 		Vector3 v3PivotRotation = new Vector3(0,floatRotationY,0);
-		if (floatRotationX < -floatRotationSpeed / 4 || floatRotationX > floatRotationSpeed / 4) {
-			this.rigidbody.AddTorque (v3ForwardRotation);
-				}
-		if(floatRotationZ < -floatRotationSpeed/4 || floatRotationZ > floatRotationSpeed/4){
-			this.rigidbody.AddTorque (v3SideRotation);
+			this.rigidbody.AddTorque (floatRotationX,0,floatRotationZ);
 
-		}
 		//if(floatRotationY < -floatPivotSpeed/4 || floatRotationY > floatPivotSpeed/4)
 			//this.rigidbody.AddTorque (v3PivotRotation);
 	}

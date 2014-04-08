@@ -7,6 +7,8 @@ public class ControlOrientation : MonoBehaviour {
 	
 	public float minimumX = -360F;
 	public float maximumX = 360F;
+    public GameObject cameraLeft;
+    public GameObject cameraRight;
 	
 	public float minimumY = 0F;
 	public float maximumY = 0F;
@@ -27,14 +29,18 @@ public class ControlOrientation : MonoBehaviour {
 	
 	void Update()
 	{
-		if (Mathf.Abs (Input.GetAxis ("Pivot")) > sensitivity) {
+		/*if (Mathf.Abs (Input.GetAxis ("Pivot")) > sensitivity) {
 						rotationX = transform.localEulerAngles.y + Input.GetAxis ("Pivot") * rotateSpeed;
 				}
-		if (Mathf.Abs(Input.GetAxis("Look")) > sensitivity)
-			rotationY += Input.GetAxis("Look") * rotateSpeed;
-		rotationY = Mathf.Clamp (rotationY, minimumY, maximumY);
-		
-		transform.localEulerAngles = new Vector3(-rotationY, rotationX, 0);
+        if (Mathf.Abs(Input.GetAxis("Look")) > sensitivity)
+        {
+            rotationY += Input.GetAxis("Look") * rotateSpeed;
+        }
+		rotationY = Mathf.Clamp (rotationY, minimumY, maximumY);*/
+
+        transform.localEulerAngles = new Vector3(0,cameraLeft.transform.localEulerAngles.y,0);
+        //cameraLeft.transform.Rotate(0, rotationY, 0);
+        //cameraRight.transform.Rotate(0, rotationY, 0); 
 		this.transform.position = GameObject.Find ("Sphere").transform.position;
 	}
 

@@ -24,7 +24,6 @@ public class FSMRotatingCylinder : MonoBehaviour {
 			transform.Rotate (0,intRotateSpeed*Time.deltaTime,0);	
 		if (_blnPlayerOnPlatform) {
 			_player.transform.RotateAround (this.transform.position, this.transform.up,intRotateSpeed*Time.deltaTime );
-						print (intRotateSpeed);
 				}
 	}
 
