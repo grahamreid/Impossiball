@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\ArrowAnimPlay.cs" />
+     <Compile Include="Assets\Elmore Blender Assets\SkyboxMesh.cs" />
      <Compile Include="Assets\Graham\Generic Scripts\CameraScript.cs" />
      <Compile Include="Assets\Graham\Generic Scripts\ControlBall.cs" />
      <Compile Include="Assets\Graham\Generic Scripts\ControlOrientation.cs" />
