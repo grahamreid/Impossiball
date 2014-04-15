@@ -33,13 +33,16 @@ public class ControlBall : MonoBehaviour {
             floatRotationZ = objCamera.transform.localEulerAngles.z - 360;
         else
             floatRotationZ = objCamera.transform.localEulerAngles.z;
+		floatRotationX /= 3;
+		floatRotationZ /= 3;
 		float floatRotationY = Input.GetAxis ("Pivot")*floatPivotSpeed;
-		Vector3 v3ForwardRotation = Vector3.Project(objCamera.transform.localEulerAngles,objOrientation.transform.TransformDirection (Vector3.forward));
+		Vector3 v3ForwardRotation = objOrientation.transform.TransformDirection (Vector3.forward)*floatRotationZ;
 		Vector3 v3ForwardCounterRotation = -1.0f * v3ForwardRotation;
-        Vector3 v3SideRotation = Vector3.Project(objCamera.transform.localEulerAngles, objOrientation.transform.TransformDirection(Vector3.right));
+        Vector3 v3SideRotation = objOrientation.transform.TransformDirection(Vector3.right)*floatRotationX;
 		Vector3 v3SideCounterRotation = -1.0f * v3SideRotation;
 		Vector3 v3PivotRotation = new Vector3(0,floatRotationY,0);
-			this.rigidbody.AddTorque (floatRotationX,0,floatRotationZ);
+		this.rigidbody.AddTorque (v3SideRotation);
+		this.rigidbody.AddTorque (v3ForwardRotation);
 
 		//if(floatRotationY < -floatPivotSpeed/4 || floatRotationY > floatPivotSpeed/4)
 			//this.rigidbody.AddTorque (v3PivotRotation);

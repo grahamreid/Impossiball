@@ -28,15 +28,15 @@ public class FSMObstacleThree : MonoBehaviour {
 		case(States.WaitingPlayerChoice):
 			foreach(GameObject platform in movingPlatforms)
 			{
-				if(platform.GetComponent<FSMMoveGenericPlatform>()._blnPlayerOnPlatform)
-					currentState = States.MovingBackward;
+//				if(platform.GetComponent<FSMMoveGenericPlatform>()._blnPlayerOnPlatform)
+					//currentState = States.MovingBackward;
 			}
 			break;
 		case(States.WaitingPlayerLeave):
 			foreach(GameObject platform in movingPlatforms)
 			{
-				if(platform.GetComponent<FSMMoveGenericPlatform>()._blnPlayerOnPlatform)
-					return;
+				//if(platform.GetComponent<FSMMoveGenericPlatform>()._blnPlayerOnPlatform)
+				//	return;
 			}
 			AssignAllCheckpoints();
 			currentState = States.MovingForward;
