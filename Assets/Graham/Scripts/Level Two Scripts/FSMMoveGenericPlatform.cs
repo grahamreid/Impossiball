@@ -50,22 +50,22 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		States currentState = States.Waiting;	
-		this.collider.enabled = true;
 		_player = GameObject.Find ("Player").gameObject;
 		_sphere = _player.transform.FindChild ("Imposi-ball").gameObject.transform.FindChild ("Sphere").gameObject;
-		fltInitialWaitTime = 1;
+		fltInitialWaitTime = 0;
 		_intDestinationIndex = 0;
 	}
 	
 	void Update () {
+		fltInitialWaitTime += Time.deltaTime;
 		switch (currentState) {
 		case(States.Waiting):
 			if(blnTimedPlatform)
 				currentState = States.Delaying;
 			break;
 		case(States.Delaying):
-			if((Time.time >= (fltInitialWaitTime + (fltSecondsPerTick*fltTicksWaiting))))
-				DetermineNextMovement();
+			if((fltInitialWaitTime >= fltSecondsPerTick*fltTicksWaiting) || !blnTimedPlatform)
+					DetermineNextMovement();
 			break;
 		case(States.RaisingWalls):
 			foreach(GameObject wall in currentWallSetToMove)
@@ -88,12 +88,15 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 			
 			this.transform.position += fltSpeed * (currentDestination.transform.position - this.transform.position).normalized * Time.deltaTime;
 			if(_blnPlayerOnPlatform)
+			{
 				_player.transform.position += fltSpeed * (currentDestination.transform.position - this.transform.position).normalized * Time.deltaTime;
+				print("here");
+			}
 			
 			if((this.transform.position - prevPosition).magnitude > (currentDestination.transform.position - prevPosition).magnitude)
 			{
 				this.transform.position = currentDestination.transform.position;
-				fltInitialWaitTime =fltInitialWaitTime+(fltSecondsPerTick*fltTicksWaiting)+(fltSecondsPerTick*fltTicksMoving);
+				fltInitialWaitTime =0;
 				currentState = States.Delaying;
 			}
 			break;
@@ -156,15 +159,15 @@ public class FSMMoveGenericPlatform : MonoBehaviour {
 		switch(direction)
 		{
 		case(MovingState.BeginForward):
-			if(_intDestinationIndex == checkpoints.Length-1)
-				return;
+			//if(_intDestinationIndex == checkpoints.Length-1)
+				//return;
 			_blnMovingForward = true;
 			_intDestinationIndex = 1;
 			prevDestination = checkpoints[0];
 			break;
 		case(MovingState.BeginReverse):
-			if(_intDestinationIndex == 0)
-				return;
+			//if(_intDestinationIndex == 0)
+				//return;
 			_blnMovingForward = false;	
 			_intDestinationIndex = checkpoints.Length-2;
 			prevDestination = checkpoints[checkpoints.Length-1];

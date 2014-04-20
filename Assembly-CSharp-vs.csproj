@@ -60,6 +60,7 @@
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\FSMMoveWall.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\FSMObstacleThree.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\FSMRotatingCylinder.cs" />
+     <Compile Include="Assets\Graham\Scripts\Level Two Scripts\SingletonActivateWallScript.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\SingletonPlayerApproaches.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\SingletonRecoverPlayer.cs" />
      <Compile Include="Assets\Graham\Scripts\Level Two Scripts\SingletonReturnCheckpoint.cs" />

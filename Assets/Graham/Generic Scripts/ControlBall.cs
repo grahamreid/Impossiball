@@ -12,6 +12,9 @@ public class ControlBall : MonoBehaviour {
 	Vector3 Vector3LastAngularVelocity;
 	GameObject objOrientation;
     GameObject objCamera;
+	bool blnBeginFadeCamera;
+	float alphaFadeValue;
+	private Texture2D txtBlackTexture;
 	
 	// Use this for initialization
 	void Start () {
@@ -19,6 +22,15 @@ public class ControlBall : MonoBehaviour {
         objCamera = GameObject.Find("CameraLeft");
 		if (Application.loadedLevel == 1)
 				this.rigidbody.AddForce (0, -25, 0);
+		blnBeginFadeCamera = false;
+		alphaFadeValue = 0;
+		txtBlackTexture = new Texture2D (1280, 720, TextureFormat.ARGB32, false);
+		for(int i = 0;i<1280;i++)
+		    for(int j = 0;j<720;j++)
+				txtBlackTexture.SetPixel(i,j,Color.black);
+
+		txtBlackTexture.Apply ();
+
 	}
 	
 	// Update is called once per frame
@@ -43,9 +55,12 @@ public class ControlBall : MonoBehaviour {
 		Vector3 v3PivotRotation = new Vector3(0,floatRotationY,0);
 		this.rigidbody.AddTorque (v3SideRotation);
 		this.rigidbody.AddTorque (v3ForwardRotation);
+		if (blnBeginFadeCamera)
+			alphaFadeValue += Mathf.Clamp01(Time.deltaTime / 5);
+		if (alphaFadeValue >= 1) 
+			Application.Quit ();
+				
 
-		//if(floatRotationY < -floatPivotSpeed/4 || floatRotationY > floatPivotSpeed/4)
-			//this.rigidbody.AddTorque (v3PivotRotation);
 	}
 
 	void LateUpdate() {
@@ -53,11 +68,23 @@ public class ControlBall : MonoBehaviour {
 			this.rigidbody.AddTorque(this.rigidbody.angularVelocity.x*(-.75f),0,this.rigidbody.angularVelocity.z*(-.75f));
 		}
 
+	void OnGUI()
+	{
+		if (blnBeginFadeCamera) {
+						GUI.color = new Color (0, 0, 0, alphaFadeValue);
+						GUI.DrawTexture (new Rect (0, 0, Screen.width, Screen.height), txtBlackTexture);
+				}
+
+	}
 
 	void OnTriggerEnter(Collider other)
 	{
-	if(other.gameObject == LevelTransitionCollider)
-			Application.LoadLevel("LevelTwo");
+		if (other.gameObject == LevelTransitionCollider)
+				if (Application.loadedLevelName == "LevelOne")
+						Application.LoadLevel ("LevelTwo");
+				else if (Application.loadedLevelName == "LevelTwo") {
+					blnBeginFadeCamera = true;
+				}
 	}
 
 }

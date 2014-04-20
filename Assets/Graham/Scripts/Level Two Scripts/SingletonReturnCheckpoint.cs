@@ -15,6 +15,7 @@ public class SingletonReturnCheckpoint : MonoBehaviour {
 
 	public void OnTriggerEnter(Collider other)
 	{
-		transform.parent.transform.FindChild ("Platform").GetComponent<FSMMoveGenericPlatform> ().EnterState_RaisingWalls(FSMMoveGenericPlatform.WallSet.endingWallSet);
+		if(transform.parent.transform.FindChild ("Platform").GetComponent<FSMMoveGenericPlatform> ().wallsToMoveEnd[0].gameObject.GetComponent<FSMMoveWall>().currentState != FSMMoveWall.State.Raised)
+			transform.parent.transform.FindChild ("Platform").GetComponent<FSMMoveGenericPlatform> ().EnterState_RaisingWalls(FSMMoveGenericPlatform.WallSet.endingWallSet);
 	}
 }
